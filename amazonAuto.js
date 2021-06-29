@@ -1,5 +1,8 @@
 const puppeteer = require('puppeteer');
-// const fs = require('fs');
+const fs = require('fs');
+
+let dataObj = {};
+const jsonFilepath = './amazonData.json';
 
 (async () => {
     const browser = await puppeteer.launch({
@@ -34,8 +37,6 @@ const puppeteer = require('puppeteer');
         return { computerLink };
     })
 
-    let dataObj = {};
-
     // let departmentComp = departments[intermediateData.apartmentsName] = [];
 
     let computerDetails = await fetchDataForGivenDepartment(intermediateData.computerLink[0]);
@@ -54,7 +55,7 @@ const puppeteer = require('puppeteer');
                 rating: itemTypeLink.productRatingArr[j],
                 price: itemTypeLink.priceArr[j],
             };
-            departments[productType].push(product);
+            dataObj[productType].push(product);
         }
     }
 
@@ -157,7 +158,20 @@ const puppeteer = require('puppeteer');
         })
     }
 
-    // let json = JSON.stringify(departments);
-    // fs.writeFileSync("amazonData.json", json);
+    jsonExist(jsonFilepath);
+
+    function jsonExist(filepath){
+        try {
+            if (fs.existsSync(filepath)) {
+                //file exists
+                return;
+            }else{
+                let json = JSON.stringify(dataObj);
+                fs.writeFileSync("amazonData.json", json);
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
 
 })();
