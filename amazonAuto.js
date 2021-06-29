@@ -22,29 +22,29 @@ const puppeteer = require('puppeteer');
     await page.goto(shopByCategoryAnchorLink);
 
     let intermediateData = await page.evaluate(function () {
-        let apartmentsDetails = document.querySelectorAll('.left_nav.browseBox ul li a');
+        let computerAnchorLink = document.querySelectorAll('.left_nav.browseBox ul li a');
 
         // let apartmentsName = [];
-        let apartmentsLink = [];
+        let computerLink = [];
 
         // apartmentsName.push(apartmentsDetails[7].innerText.trim());
 
-        apartmentsLink.push("https://www.amazon.com/" + apartmentsDetails[7].getAttribute('href'));
+        computerLink.push("https://www.amazon.com/" + computerAnchorLink[7].getAttribute('href'));
 
-        return { apartmentsLink };
+        return { computerLink };
     })
 
-    let departments = {};
+    let dataObj = {};
 
     // let departmentComp = departments[intermediateData.apartmentsName] = [];
 
-    let computerDataDetails = await fetchDataForGivenDepartment(intermediateData.apartmentsLink[0]);
+    let computerDetails = await fetchDataForGivenDepartment(intermediateData.computerLink[0]);
 
-    for (let i = 0; i < computerDataDetails.computerItemTypeLinkArr.length; i++) {
-        let itemTypeLink = await goToComputerItemTypeAndFetchItem(computerDataDetails.computerItemTypeLinkArr[i]);
-        departments[computerDataDetails.computerItemTypeNameArr[i]] = [];
+    for (let i = 0; i < computerDetails.computerItemTypeLinkArr.length; i++) {
+        let itemTypeLink = await goToComputerItemTypeAndFetchItem(computerDetails.computerItemTypeLinkArr[i]);
+        dataObj[computerDetails.computerItemTypeNameArr[i]] = [];
 
-        let productType = computerDataDetails.computerItemTypeNameArr[i];
+        let productType = computerDetails.computerItemTypeNameArr[i];
 
         for (let j = 0; j < itemTypeLink.productLinkArr.length; j++) {
             let product = {
@@ -128,9 +128,9 @@ const puppeteer = require('puppeteer');
     }
 
 
-    function fetchDataForGivenDepartment(departmentLink) {
+    function fetchDataForGivenDepartment(Link) {
         return new Promise(function (resolve, reject) {
-            page.goto(departmentLink).then(function () {
+            page.goto(Link).then(function () {
                 return page.evaluate(function () {
                     let computerItemTypeLink = document.querySelectorAll('.a-spacing-micro.apb-browse-refinements-indent-2 a');
 
