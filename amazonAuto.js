@@ -7,7 +7,7 @@ const jsonFilepath = './amazonData.json';
 (async () => {
     const browser = await puppeteer.launch({
         defaultViewport: null,
-        slowMo: 50,
+        slowMo: 100,
         args: ['--start-maximized'],
         headless: false,
     });
@@ -18,26 +18,21 @@ const jsonFilepath = './amazonData.json';
         let shopByCategoryAnchor = document.querySelector('.a-cardui-footer a[aria-label="Shop by Category - Shop now"]');
 
         let shopByCategoryAnchorLink = "https://www.amazon.com/" + shopByCategoryAnchor.getAttribute('href');
-        // console.log(shopByCategoryAnchorLink);
+
         return shopByCategoryAnchorLink;
     })
-    // console.log(shopByCategoryAnchorLink);
+
     await page.goto(shopByCategoryAnchorLink);
 
     let intermediateData = await page.evaluate(function () {
         let computerAnchorLink = document.querySelectorAll('.left_nav.browseBox ul li a');
 
-        // let apartmentsName = [];
         let computerLink = [];
-
-        // apartmentsName.push(apartmentsDetails[7].innerText.trim());
 
         computerLink.push("https://www.amazon.com/" + computerAnchorLink[7].getAttribute('href'));
 
         return { computerLink };
     })
-
-    // let departmentComp = departments[intermediateData.apartmentsName] = [];
 
     let computerDetails = await fetchDataForGivenDepartment(intermediateData.computerLink[0]);
 
@@ -69,15 +64,11 @@ const jsonFilepath = './amazonData.json';
                         productNameArr.push(productName[i].innerText.trim());
                     }
 
-                    // console.log(productNameArr);
-
                     let productLink = document.querySelectorAll(".a-section.a-spacing-medium .a-section.a-spacing-none.a-spacing-top-small h2 a");
                     let productLinkArr = [];
                     for (let i = 0; i < productLink.length; i++) {
                         productLinkArr.push("https://www.amazon.com/" + productLink[i].getAttribute('href'));
                     }
-
-                    // console.log(productLinkArr);
 
                     let imgIndex = document.querySelectorAll(".rush-component .a-link-normal.s-no-outline .a-section.aok-relative.s-image-square-aspect img");
                     let imgIdx = [];
@@ -95,7 +86,6 @@ const jsonFilepath = './amazonData.json';
                             imageLinkArr.push(images[i]);
                         }
                     }
-                    // console.log(imageLinkArr);
 
                     let product = document.querySelectorAll(".a-section.a-spacing-medium");
                     let priceArr = [];
@@ -107,7 +97,6 @@ const jsonFilepath = './amazonData.json';
                             priceArr.push(`Price not avaiable. !! please visit ${productLinkArr[i]}`);
                         }
                     }
-                    // console.log(priceArr);
 
                     let productRating = document.querySelectorAll(".a-section.a-spacing-medium ");
                     let productRatingArr = [];
@@ -118,7 +107,6 @@ const jsonFilepath = './amazonData.json';
                             productRatingArr.push("Product rating not avaliable");
                         }
                     }
-                    // console.log(productRatingArr);
 
                     return { productNameArr, productLinkArr, imageLinkArr, priceArr, productRatingArr };
                 }).then(function (productNameArr, productLinkArr, imageLinkArr, priceArr, productRatingArr) {
@@ -160,12 +148,12 @@ const jsonFilepath = './amazonData.json';
 
     jsonExist(jsonFilepath);
 
-    function jsonExist(filepath){
+    function jsonExist(filepath) {
         try {
             if (fs.existsSync(filepath)) {
                 //file exists
                 return;
-            }else{
+            } else {
                 let json = JSON.stringify(dataObj);
                 fs.writeFileSync("amazonData.json", json);
             }
